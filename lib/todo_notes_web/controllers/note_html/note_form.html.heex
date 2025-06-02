@@ -1,0 +1,16 @@
+<.form :let={f} for={@changeset} action={@action}>
+  <.input field={f[:title]} type="text" label="Title" />
+  <.input field={f[:body]} type="text" label="Body" />
+  <.input field={f[:due_date]} type="date" label="Due date" />
+  <.input
+    field={f[:tags]}
+    type="select"
+    multiple
+    label="Tags"
+    options={[{"Task", "task"}, {"Event", "event"}, {"Meeting", "meeting"}]}
+  />
+  <footer>
+    <.button variant="primary">Save Note</.button>
+    <.button :if={@return_to} href={@return_to}>Cancel</.button>
+  </footer>
+</.form>
