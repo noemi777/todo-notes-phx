@@ -79,3 +79,24 @@ if (process.env.NODE_ENV === "development") {
   })
 }
 
+// assets/js/app.jsx
+
+import axios from "axios";
+import React from "react";
+
+import { createInertiaApp } from "@inertiajs/react";
+import { createRoot } from "react-dom/client";
+
+axios.defaults.xsrfHeaderName = "x-csrf-token";
+
+const appElement = document.getElementById("app");
+if (appElement) {
+  createInertiaApp({
+    resolve: async (name) => {
+      return await import(`./pages/${name}.jsx`);
+    },
+    setup({ App, el, props }) {
+      createRoot(el).render(<App {...props} />);
+    },
+  });
+}
