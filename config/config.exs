@@ -7,6 +7,19 @@
 # General application configuration
 import Config
 
+config :todo_notes, :scopes,
+  user: [
+    default: true,
+    module: TodoNotes.Accounts.Scope,
+    assign_key: :current_scope,
+    access_path: [:user, :id],
+    schema_key: :user_id,
+    schema_type: :binary_id,
+    schema_table: :users,
+    test_data_fixture: TodoNotes.AccountsFixtures,
+    test_login_helper: :register_and_log_in_user
+  ]
+
 config :todo_notes,
   ecto_repos: [TodoNotes.Repo],
   generators: [timestamp_type: :utc_datetime]
