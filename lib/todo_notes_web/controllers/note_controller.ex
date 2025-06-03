@@ -6,6 +6,7 @@ defmodule TodoNotesWeb.NoteController do
 
   def index(conn, _params) do
     notes = Todos.list_notes(conn.assigns.current_scope)
+
     conn
     |> assign(:page_title, "Notes")
     |> assign_prop(:notes, notes)
@@ -33,6 +34,7 @@ defmodule TodoNotesWeb.NoteController do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         errors = format_changeset_errors(changeset)
+
         conn
         |> assign(:page_title, "New Note")
         |> assign_prop(:isEditing, false)
@@ -43,6 +45,7 @@ defmodule TodoNotesWeb.NoteController do
 
   def show(conn, %{"id" => id}) do
     note = Todos.get_note!(conn.assigns.current_scope, id)
+
     conn
     |> assign(:page_title, note.title)
     |> assign_prop(:note, note)
@@ -51,6 +54,7 @@ defmodule TodoNotesWeb.NoteController do
 
   def edit(conn, %{"id" => id}) do
     note = Todos.get_note!(conn.assigns.current_scope, id)
+
     conn
     |> assign(:page_title, "Edit Note")
     |> assign_prop(:note, note)
@@ -69,6 +73,7 @@ defmodule TodoNotesWeb.NoteController do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         errors = format_changeset_errors(changeset)
+
         conn
         |> assign(:page_title, "Edit Note")
         |> assign_prop(:note, note)
