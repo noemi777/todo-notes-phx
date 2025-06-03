@@ -15,59 +15,90 @@ interface NoteFormProps {
   isEditing?: boolean;
 }
 
+// Form components inspired by shadcn UI
 interface FormFieldProps {
   label: string;
   name: string;
   error?: string;
+  description?: string;
   children: React.ReactNode;
 }
 
-const FormField: FC<FormFieldProps> = ({ label, name, error, children }) => {
-  return (
-    <div className="mb-4">
-      <label htmlFor={name} className="block text-sm font-medium text-gray-700">
-        {label}
-      </label>
-      {children}
-      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
-    </div>
-  );
+// Simplified form components with consistent styling
+const UI = {
+  FormLabel: ({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) => (
+    <label htmlFor={htmlFor} className="text-sm font-medium leading-none">{children}</label>
+  ),
+  
+  FormItem: ({ children }: { children: React.ReactNode }) => (
+    <div className="space-y-2">{children}</div>
+  ),
+  
+  FormControl: ({ children }: { children: React.ReactNode }) => (
+    <div className="mt-2 relative">{children}</div>
+  ),
+  
+  FormDescription: ({ children }: { children: React.ReactNode }) => (
+    <p className="text-sm text-slate-500">{children}</p>
+  ),
+  
+  FormMessage: ({ children }: { children?: React.ReactNode }) => (
+    children ? <p className="text-sm font-medium text-red-500">{children}</p> : null
+  )
 };
 
+// Reusable form field component
+const FormField: FC<FormFieldProps> = ({ label, name, error, description, children }) => (
+  <UI.FormItem>
+    <UI.FormLabel htmlFor={name}>{label}</UI.FormLabel>
+    <UI.FormControl>{children}</UI.FormControl>
+    {description && <UI.FormDescription>{description}</UI.FormDescription>}
+    {error && <UI.FormMessage>{error}</UI.FormMessage>}
+  </UI.FormItem>
+);
+
+// Character counter with progress bar
 interface CharCounterProps {
   current: number;
   max: number;
 }
 
 const CharCounter: FC<CharCounterProps> = ({ current, max }) => {
-  const isOverLimit = current > max;
+  const percentage = (current / max) * 100;
+  const textColor = percentage < 75 ? 'text-slate-500' : percentage < 90 ? 'text-amber-500' : 'text-red-500';
+  const bgColor = percentage < 75 ? 'bg-slate-500' : percentage < 90 ? 'bg-amber-500' : 'bg-red-500';
   
   return (
-    <div className={`text-xs ${isOverLimit ? 'text-red-500' : 'text-gray-500'}`}>
-      {current}/{max}
+    <div className="mt-1 space-y-1">
+      <div className="h-1 w-full bg-slate-200 rounded-full overflow-hidden">
+        <div className={`h-full ${bgColor}`} style={{ width: `${Math.min(100, percentage)}%` }} />
+      </div>
+      <div className={`text-xs text-right ${textColor}`}>{current}/{max}</div>
     </div>
   );
 };
 
+// Tag component
 interface TagProps {
-  tag: string;
+  text: string;
   onRemove: () => void;
 }
 
-const Tag: FC<TagProps> = ({ tag, onRemove }) => {
-  return (
-    <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-      {tag}
-      <button
-        type="button"
-        onClick={onRemove}
-        className="ml-1.5 inline-flex text-indigo-400 hover:text-indigo-600"
-      >
-        &times;
-      </button>
-    </div>
-  );
-};
+const Tag: FC<TagProps> = ({ text, onRemove }) => (
+  <span className="inline-flex items-center rounded-md border border-slate-200 bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-800 transition-colors hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2">
+    {text}
+    <button 
+      type="button" 
+      onClick={onRemove} 
+      className="ml-1 inline-flex h-3.5 w-3.5 items-center justify-center rounded-full text-slate-500 hover:bg-slate-200 hover:text-slate-700 focus:outline-none"
+    >
+      <span className="sr-only">Remove tag</span>
+      <svg className="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+        <path strokeLinecap="round" strokeWidth="1.5" d="M1 1l6 6m0-6L1 7" />
+      </svg>
+    </button>
+  </span>
+);
 
 export default function NoteForm({ note, errors = {}, isEditing = false }: NoteFormProps): JSX.Element {
   const [values, setValues] = useState<Note>({
@@ -142,8 +173,8 @@ export default function NoteForm({ note, errors = {}, isEditing = false }: NoteF
   function handleTagChange(e: ChangeEvent<HTMLInputElement>): void {
     setNewTag(e.target.value);
   }
-  function addTag(e: React.MouseEvent<HTMLButtonElement>): void {
-    e.preventDefault();
+  function addTag(e?: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLInputElement>): void {
+    if (e) e.preventDefault();
     if (newTag.trim() !== '') {
       setValues(values => ({
         ...values,
@@ -175,58 +206,57 @@ export default function NoteForm({ note, errors = {}, isEditing = false }: NoteF
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6">
+    <div className="max-w-4xl mx-auto p-8 bg-white rounded-lg shadow-md border border-slate-200">
+      <h1 className="text-2xl font-bold text-slate-900 mb-8">
         {isEditing ? 'Edit Note' : 'Create New Note'}
       </h1>
       
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <FormField
+          label="Title"
+          name="title"
+          error={validationErrors.title || errors?.title}
+          description="Give your note a clear, descriptive title."
+        >
           <input
             type="text"
             id="title"
             name="title"
             value={values.title}
             onChange={handleChange}
-            className={`mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 p-2 ${validationErrors.title ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-indigo-500'}`}
-            maxLength={MAX_TITLE_LENGTH}
-            required
+            className={`flex h-10 w-full rounded-md border ${validationErrors.title ? 'border-red-300 focus-visible:ring-red-500' : 'border-slate-200 focus-visible:ring-slate-950'} bg-background px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50`}
+            placeholder="Note title"
           />
           <div className="flex justify-between mt-1">
-            <div>
-              {(validationErrors.title || errors.title) && (
-                <p className="text-sm text-red-600">{validationErrors.title || errors.title}</p>
-              )}
-            </div>
             <CharCounter current={titleChars} max={MAX_TITLE_LENGTH} />
           </div>
-        </div>
+        </FormField>
 
-        <div>
-          <label htmlFor="body" className="block text-sm font-medium text-gray-700">Content</label>
+        <FormField
+          label="Content"
+          name="body"
+          error={validationErrors.body || errors?.body}
+          description="Add details, notes, or any additional information."
+        >
           <textarea
             id="body"
             name="body"
-            rows={4}
             value={values.body}
             onChange={handleChange}
-            className={`mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 p-2 ${validationErrors.body ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-indigo-500'}`}
-            maxLength={MAX_BODY_LENGTH}
-            required
+            rows={4}
+            className={`flex w-full rounded-md border ${validationErrors.body ? 'border-red-300 focus-visible:ring-red-500' : 'border-slate-200 focus-visible:ring-slate-950'} bg-background px-3 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 min-h-[120px] resize-none`}
+            placeholder="Write your note content here..."
           />
           <div className="flex justify-between mt-1">
-            <div>
-              {(validationErrors.body || errors.body) && (
-                <p className="text-sm text-red-600">{validationErrors.body || errors.body}</p>
-              )}
-            </div>
             <CharCounter current={bodyChars} max={MAX_BODY_LENGTH} />
           </div>
-        </div>
+        </FormField>
 
-        <div>
-          <label htmlFor="due_date" className="block text-sm font-medium text-gray-700">Due Date</label>
+        <FormField 
+          label="Due Date" 
+          name="due_date" 
+          error={validationErrors.due_date || errors?.due_date}
+        >
           <input
             type="date"
             id="due_date"
@@ -234,58 +264,62 @@ export default function NoteForm({ note, errors = {}, isEditing = false }: NoteF
             value={values.due_date}
             onChange={handleChange}
             min={new Date().toISOString().split('T')[0]}
-            className={`mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 p-2 ${validationErrors.due_date ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-indigo-500'}`}
+            className={`flex h-10 w-full rounded-md border ${validationErrors.due_date ? 'border-red-300 focus-visible:ring-red-500' : 'border-slate-200 focus-visible:ring-slate-950'} bg-background px-3 py-2 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50`}
           />
-          {(validationErrors.due_date || errors.due_date) && (
-            <p className="mt-1 text-sm text-red-600">{validationErrors.due_date || errors.due_date}</p>
-          )}
-        </div>
+        </FormField>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Tags</label>
-          <div className="flex mt-1">
+        <FormField
+          label="Tags"
+          name="tags"
+          error={errors?.tags}
+          description="Add keywords to help organize your notes."
+        >
+          <div className="flex rounded-md">
             <input
               type="text"
+              id="tagInput"
               value={newTag}
               onChange={handleTagChange}
-              placeholder="Add a tag"
-              className="block w-full rounded-l-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  addTag();
+                }
+              }}
+              className="flex-1 min-w-0 h-10 w-full rounded-l-md border border-slate-200 bg-background px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              placeholder="Add a tag and press Enter"
             />
             <button
-              onClick={addTag}
               type="button"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              onClick={addTag}
+              className="inline-flex items-center justify-center h-10 rounded-r-md border border-l-0 border-slate-200 bg-slate-100 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-slate-200 focus:z-10 focus:outline-none focus:ring-2 focus:ring-slate-500"
             >
               Add
             </button>
           </div>
-          
           {values.tags.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap gap-2">
               {values.tags.map((tag, index) => (
-                <Tag 
-                  key={index} 
-                  tag={tag} 
-                  onRemove={() => removeTag(index)} 
-                />
+                <Tag key={index} text={tag} onRemove={() => removeTag(index)} />
               ))}
             </div>
           )}
-          {errors.tags && <p className="mt-1 text-sm text-red-600">{errors.tags}</p>}
-        </div>
+        </FormField>
 
-        <div className="flex justify-end space-x-3 pt-4">
+        <div className="flex justify-end space-x-3 pt-6 border-t border-slate-200">
           <button
             type="button"
             onClick={() => router.visit('/notes-js')}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-slate-200 bg-background hover:bg-slate-100 hover:text-slate-900 h-10 px-4 py-2"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={!values.title.trim() || Object.keys(validationErrors).length > 0}
-            className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${!values.title.trim() || Object.keys(validationErrors).length > 0 ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'}`}
+            className={`inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 h-10 px-4 py-2 ${!values.title.trim() || Object.keys(validationErrors).length > 0 ? 
+              'bg-slate-400 text-slate-50 cursor-not-allowed' : 
+              'bg-slate-900 text-slate-50 hover:bg-slate-800 focus-visible:ring-slate-950'}`}
           >
             {isEditing ? 'Update Note' : 'Create Note'}
           </button>
