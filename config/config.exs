@@ -49,7 +49,7 @@ config :esbuild,
   version: "0.21.5",
   todo_notes: [
     args:
-      ~w(js/app.jsx --bundle --target=es2020 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+      ~w(js/app.tsx --bundle --target=es2020 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
@@ -84,7 +84,7 @@ config :inertia,
   # An optional list of static file paths to track for changes. You'll generally
   # want to include any JavaScript assets that may require a page refresh when
   # modified.
-  static_paths: ["/assets/app.jsx"],
+  static_paths: ["/assets/app.tsx"],
 
   # The default version string to use (if you decide not to track any static
   # assets using the `static_paths` config). Defaults to "1".

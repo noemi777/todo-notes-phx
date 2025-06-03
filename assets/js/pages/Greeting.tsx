@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { type FC } from "react";
+import { useState } from "react";
 
-const Greeting = ({ greetingText }) => {
+const Greeting: FC<{ greetingText: string }> = ({ greetingText }) => {
   const [counter, setCounter] = useState(15);
   return (
     <div>
@@ -14,5 +15,5 @@ const Greeting = ({ greetingText }) => {
     </div>
   );
 };
-console.log("Greeting");
+
 export default Greeting;
