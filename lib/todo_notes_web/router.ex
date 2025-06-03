@@ -23,6 +23,7 @@ defmodule TodoNotesWeb.Router do
 
     get "/", PageController, :home
     get "/greeting", PageController, :greeting
+    get "/form1", PageController, :form1
   end
 
   # Other scopes may use custom stacks.
