@@ -167,9 +167,9 @@ export default function NoteForm({ note, errors = {}, isEditing = false }: NoteF
     
     if (isFormValid) {
       if (isEditing && note?.id) {
-        router.put(`/notes/${note.id}`, { note: values as Record<string, any> });
+        router.put(`/notes-js/${note.id}`, { note: values as Record<string, any> });
       } else {
-        router.post('/notes', { note: values as Record<string, any> });
+        router.post('/notes-js', { note: values as Record<string, any> });
       }
     }
   }
@@ -277,7 +277,7 @@ export default function NoteForm({ note, errors = {}, isEditing = false }: NoteF
         <div className="flex justify-end space-x-3 pt-4">
           <button
             type="button"
-            onClick={() => router.visit('/notes')}
+            onClick={() => router.visit('/notes-js')}
             className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Cancel

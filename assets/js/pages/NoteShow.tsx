@@ -26,7 +26,7 @@ export default function NoteShow({ note }: NoteShowProps): JSX.Element {
 
   function deleteNote(): void {
     if (confirm('Are you sure you want to delete this note?')) {
-      router.delete(`/notes/${note.id}`);
+      router.delete(`/notes-js/${note.id}`);
     }
   }
 
@@ -34,7 +34,7 @@ export default function NoteShow({ note }: NoteShowProps): JSX.Element {
     <div className="max-w-4xl mx-auto p-6">
       <div className="mb-6">
         <button
-          onClick={() => router.visit('/notes')}
+          onClick={() => router.visit('/notes-js')}
           className="text-indigo-600 hover:text-indigo-900 flex items-center"
         >
           ← Back to Notes
@@ -46,7 +46,7 @@ export default function NoteShow({ note }: NoteShowProps): JSX.Element {
           <h1 className="text-2xl font-bold text-gray-900">{note.title}</h1>
           <div className="flex space-x-3">
             <button
-              onClick={() => router.visit(`/notes/${note.id}/edit`)}
+              onClick={() => router.visit(`/notes-js/${note.id}/edit`)}
               className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Edit

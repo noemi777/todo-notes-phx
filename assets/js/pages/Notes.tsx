@@ -21,7 +21,7 @@ export default function Notes({ notes }: NotesProps): JSX.Element {
 
   function deleteNote(id: string): void {
     if (confirm('Are you sure you want to delete this note?')) {
-      router.delete(`/notes/${id}`);
+      router.delete(`/notes-js/${id}`);
     }
   }
 
@@ -30,7 +30,7 @@ export default function Notes({ notes }: NotesProps): JSX.Element {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900">My Notes</h1>
         <button
-          onClick={() => router.visit('/notes/new')}
+          onClick={() => router.visit('/notes-js/new')}
           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
           Create New Note
@@ -41,7 +41,7 @@ export default function Notes({ notes }: NotesProps): JSX.Element {
         <div className="text-center py-12 bg-white rounded-lg shadow">
           <p className="text-gray-500 text-lg">You don't have any notes yet.</p>
           <button
-            onClick={() => router.visit('/notes/new')}
+            onClick={() => router.visit('/notes-js/new')}
             className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Create Your First Note
@@ -58,7 +58,7 @@ export default function Notes({ notes }: NotesProps): JSX.Element {
                   </h3>
                   <div className="flex space-x-2">
                     <button
-                      onClick={() => router.visit(`/notes/${note.id}/edit`)}
+                      onClick={() => router.visit(`/notes-js/${note.id}/edit`)}
                       className="text-indigo-600 hover:text-indigo-900"
                     >
                       Edit
@@ -102,7 +102,7 @@ export default function Notes({ notes }: NotesProps): JSX.Element {
               </div>
               <div className="bg-gray-50 px-4 py-4 sm:px-6">
                 <button
-                  onClick={() => router.visit(`/notes/${note.id}`)}
+                  onClick={() => router.visit(`/notes-js/${note.id}`)}
                   className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
                 >
                   View Details →

@@ -29,7 +29,7 @@ defmodule TodoNotesWeb.NoteInertiaController do
     case Todos.create_note(conn.assigns.current_scope, note_params) do
       {:ok, note} ->
         conn
-        |> redirect(to: ~p"/notes/#{note}")
+        |> redirect(to: ~p"/notes-js/#{note}")
         |> put_flash(:info, "Note created successfully.")
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -69,7 +69,7 @@ defmodule TodoNotesWeb.NoteInertiaController do
       {:ok, note} ->
         conn
         |> put_flash(:info, "Note updated successfully.")
-        |> redirect(to: ~p"/notes/#{note}")
+        |> redirect(to: ~p"/notes-js/#{note}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         errors = format_changeset_errors(changeset)
@@ -89,7 +89,7 @@ defmodule TodoNotesWeb.NoteInertiaController do
 
     conn
     |> put_flash(:info, "Note deleted successfully.")
-    |> redirect(to: ~p"/notes")
+    |> redirect(to: ~p"/notes-js")
   end
 
   # Helper to format changeset errors for the frontend
