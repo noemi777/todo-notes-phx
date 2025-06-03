@@ -11,6 +11,7 @@ defmodule TodoNotesWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_scope_for_user
+    plug Inertia.Plug
   end
 
   pipeline :api do
@@ -21,6 +22,7 @@ defmodule TodoNotesWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/greeting", PageController, :greeting
   end
 
   # Other scopes may use custom stacks.
