@@ -59,6 +59,7 @@ defmodule TodoNotesWeb.Router do
     end
 
     resources "/notes", NoteController
+    resources "/notes-js", NoteInertiaController
     post "/users/update-password", UserSessionController, :update_password
   end
 
